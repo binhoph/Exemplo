@@ -14,30 +14,9 @@ namespace Exemplo
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
-            {
-                CarregarGrid();
-            }
         }
 
-        protected void Salvar()
-        {
-            var cliente = new ClienteModel();
-            var db = new ClienteCrud();
-
-            if (ModelState.IsValid)
-            {
-                //cliente.Nome = txtNome.Text;
-                //cliente.Email = txtEmail.Text;
-                //cliente.DataNascimento = Convert.ToDateTime(DataNascimento.Text);
-                //db.InsertOrUpdate(cliente);
-
-                //gridDados.DataBind();
-
-            }
-        }
-
-
+       
         public IQueryable<ClienteModel> CarregarGrid()
         {
             var db = new ClienteCrud();
@@ -56,16 +35,59 @@ namespace Exemplo
             }
         }
 
-        //protected void BtnSalvar_Click(object sender, EventArgs e)
-        //{
-        //    var db = new ClienteCrud();
-        //    var item = new ClienteModel();
-        //    //TryUpdateModel(item);
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.InsertOrUpdate(item);
-        //        gridDados.DataBind();
-        //    }
-        //}
+        protected void gridDados_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            var cliente = new ClienteCrud();
+            var objeCliente = new ClienteModel();
+            var id = Convert.ToInt32(e.CommandArgument);
+            hdn.Value = id.ToString();
+            
+            switch (e.CommandName)
+            {
+                case "Excluir":
+                    cliente.Delete(id);
+                    gridDados.DataBind();
+                    break;
+
+                case "Editar":
+
+                    CarregarModal(id);
+                    ModalUpdate.Show();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        public void CarregarModal(int id)
+        {
+            var user = new ClienteCrud();
+
+           var objUser = user.PesquisarPorId(id);
+
+           txtNomeModal.Text = objUser.Nome;
+           txtEmailModal.Text = objUser.Email;
+           txtDataNascModal.Text = objUser.DataNascimento.ToString();
+
+        }
+
+        protected void btnSalvar_Click(object sender, EventArgs e)
+        {
+            var cliente = new ClienteCrud();
+            var objCliente = new ClienteModel();
+
+            objCliente.Id = Convert.ToInt32(hdn.Value);
+            objCliente.Nome = txtNomeModal.Text;
+            objCliente.Email = txtEmailModal.Text;
+            objCliente.DataNascimento = Convert.ToDateTime(txtDataNascModal.Text);
+
+            cliente.InsertOrUpdate(objCliente);
+
+            gridDados.DataBind();
+
+        }
+
+       
     }
 }

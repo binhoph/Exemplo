@@ -21,9 +21,9 @@ namespace Exemplo.Model.Cliente
                 db.Entry(cliente).State = cliente.Id == 0 ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw new Exception("Error ao cadastrar um cliente!" + ex.Message);
             }
         }
 
@@ -35,9 +35,9 @@ namespace Exemplo.Model.Cliente
                 db.Clientes.Remove(cliente);
                 db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error ao excluir o Cliente");
+                throw new Exception("Error ao excluir o Cliente" + ex.Message);
             }
         }
 
@@ -49,8 +49,21 @@ namespace Exemplo.Model.Cliente
 
                 return dados;
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error ao carregar os dados" + ex.Message);
+            }
+        }
+
+        public ClienteModel PesquisarPorId(int id)
+        {
+            try
+            {
+                return db.Clientes.FirstOrDefault(x => x.Id == id);
+            }
             catch (Exception)
             {
+                
                 throw;
             }
         }
